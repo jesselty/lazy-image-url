@@ -5,32 +5,39 @@
         elem,
         timeoutId;
     lazyLoadElements.each(function() {
-        $(this).prepend('<div class="llu-smooth-img-load"></div>');
-        elem = $(this).find('.llu-smooth-img-load');
+        var self = this,
+            $self = $(this),
+            $selfOffsetTop = $self.offset().top;
+            
+        $self.prepend('<div class="llu-smooth-img-load"></div>');
+        elem = $self.find('.llu-smooth-img-load');
 
-        if ($(this).attr('on-load') === undefined) {
-            if (objOfLazyImgElems[$(this).offset().top] === undefined) {
-                objOfLazyImgElems[$(this).offset().top] = [];
+        if ($self.attr('on-load') === undefined) {
+            if (objOfLazyImgElems[$selfOffsetTop] === undefined) {
+                objOfLazyImgElems[$selfOffsetTop] = [];
             }
-            objOfLazyImgElems[$(this).offset().top].push({
+            objOfLazyImgElems[$selfOffsetTop].push({
                 'elem': elem,
-                'url': $(this).attr('lazy-image-url')
+                'url': $self.attr('lazy-image-url')
             });
         } else {
-            if (objOfOnLoadImgElems[$(this).offset().top] === undefined) {
-                objOfOnLoadImgElems[$(this).offset().top] = [];
+            if (objOfOnLoadImgElems[$selfOffsetTop] === undefined) {
+                objOfOnLoadImgElems[$selfOffsetTop] = [];
             }
-            objOfOnLoadImgElems[$(this).offset().top].push({
+            objOfOnLoadImgElems[$selfOffsetTop].push({
                 'elem': elem,
-                'url': $(this).attr('lazy-image-url')
+                'url': $self.attr('lazy-image-url')
             });
         }
     });
 
     function setImageIfInViewportFn(obj, forceLoad) {
+        var $window = $(window),
+            $windowScrollTop = $window.scrollTop(),
+            $windowHeight = $window.height();
         for (var a in obj) {
             var eachBlock = obj[a];
-            if (forceLoad || parseInt(a, 10) < $(window).scrollTop() + ($(window).height())) {
+            if (forceLoad || parseInt(a, 10) < $windowScrollTop + $windowHeight) {
                 for (var i = 0, len = eachBlock.length; i < len; i++) {
                     var img = document.createElement('img');
                     img.src = eachBlock[i].url;
