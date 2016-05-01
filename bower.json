@@ -1,0 +1,29 @@
+{
+    "name": "lazy-image-url",
+    "version": "0.0.0",
+    "authors": [
+        "Jessel John <jesseljohn130@gmail.com>"
+    ],
+    "description": "Lazy Load Images jQuery Plugin .Sets background-image for element with attribute 'lazy-image-url' with url as its value",
+    "main": [
+        "src/llu.scss",
+        "src/llu.js"
+    ],
+    "moduleType": [],
+    "keywords": [
+        "lazyload",
+        "image"
+    ],
+    "dependencies": {
+        "jQuery": "^2.2.3"
+    },
+    "license": "MIT",
+    "homepage": "",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
+}
