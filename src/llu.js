@@ -10,7 +10,7 @@
                 $self = $(this),
                 $selfOffsetTop = $self.offset().top;
 
-            if ($self.attr('on-load') === undefined) {
+            if ($self.attr('on-win-load') === undefined) {
                 if (objOfLazyImgElems[$selfOffsetTop] === undefined) {
                     objOfLazyImgElems[$selfOffsetTop] = [];
                 }
