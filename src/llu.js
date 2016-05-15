@@ -1,35 +1,34 @@
 ! function(window, document, $, undefined) {
-    var lazyLoadElements = $('[lazy-image-url]'),
+    var lazyLoadElements = $('[data-lazy-image]'),
         objOfOnLoadImgElems = {},
         objOfLazyImgElems = {},
-        elem,
-        timeoutId;
-    lazyLoadElements.each(function() {
-        var self = this,
-            $self = $(this),
-            $selfOffsetTop = $self.offset().top;
-            
-        $self.prepend('<div class="llu-smooth-img-load"></div>');
-        elem = $self.find('.llu-smooth-img-load');
+        scrollTimeoutId, resizeTimeoutId;
 
-        if ($self.attr('on-load') === undefined) {
-            if (objOfLazyImgElems[$selfOffsetTop] === undefined) {
-                objOfLazyImgElems[$selfOffsetTop] = [];
+    function calculateOffsetFn() {
+        lazyLoadElements.each(function() {
+            var self = this,
+                $self = $(this),
+                $selfOffsetTop = $self.offset().top;
+
+            if ($self.attr('on-load') === undefined) {
+                if (objOfLazyImgElems[$selfOffsetTop] === undefined) {
+                    objOfLazyImgElems[$selfOffsetTop] = [];
+                }
+                objOfLazyImgElems[$selfOffsetTop].push({
+                    'elem': $self,
+                    'url': $self.attr('data-lazy-image')
+                });
+            } else {
+                if (objOfOnLoadImgElems[$selfOffsetTop] === undefined) {
+                    objOfOnLoadImgElems[$selfOffsetTop] = [];
+                }
+                objOfOnLoadImgElems[$selfOffsetTop].push({
+                    'elem': $self,
+                    'url': $self.attr('data-lazy-image')
+                });
             }
-            objOfLazyImgElems[$selfOffsetTop].push({
-                'elem': elem,
-                'url': $self.attr('lazy-image-url')
-            });
-        } else {
-            if (objOfOnLoadImgElems[$selfOffsetTop] === undefined) {
-                objOfOnLoadImgElems[$selfOffsetTop] = [];
-            }
-            objOfOnLoadImgElems[$selfOffsetTop].push({
-                'elem': elem,
-                'url': $self.attr('lazy-image-url')
-            });
-        }
-    });
+        });
+    }
 
     function setImageIfInViewportFn(obj, forceLoad) {
         var $window = $(window),
@@ -42,18 +41,28 @@
                     var img = document.createElement('img');
                     img.src = eachBlock[i].url;
                     img.onload = function(eachElem) {
-                        return function() {
-                            eachElem.elem.css(
-                                'background-image',
-                                'url(' + eachElem.url + ')'
-                            ).addClass('llu-img-loaded');
-                        }
+                        console.log(eachElem.elem[0].nodeName)
+                        return eachElem.elem[0].nodeName.toLowerCase() == "img" ?
+                            function() {
+                                eachElem.elem.attr(
+                                    'src',
+                                    eachElem.url
+                                ).addClass('llu-img-loaded');
+                            } :
+                            function() {
+                                eachElem.elem.css(
+                                    'background-image',
+                                    'url(' + eachElem.url + ')'
+                                ).addClass('llu-img-loaded');
+                            };
                     }(eachBlock[i]);
                 }
                 delete obj[a];
             }
         }
     }
+
+    calculateOffsetFn();
 
     if (('readyState' in document) && document.readyState == 'complete') {
         setImageIfInViewportFn();
@@ -65,9 +74,18 @@
     }
 
     window.addEventListener('scroll', function() {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(function() {
+        clearTimeout(scrollTimeoutId);
+        scrollTimeoutId = setTimeout(function() {
             setImageIfInViewportFn(objOfLazyImgElems, false);
+        }, 300);
+    }, false);
+
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeoutId);
+        resizeTimeoutId = setTimeout(function() {
+            objOfOnLoadImgElems = {};
+            objOfLazyImgElems = {};
+            calculateOffsetFn();
         }, 300);
     }, false);
 }(window, document, jQuery);
