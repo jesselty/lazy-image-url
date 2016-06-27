@@ -41,7 +41,6 @@
                     var img = document.createElement('img');
                     img.src = eachBlock[i].url;
                     img.onload = function(eachElem) {
-                        console.log(eachElem.elem[0].nodeName)
                         return eachElem.elem[0].nodeName.toLowerCase() == "img" ?
                             function() {
                                 eachElem.elem.attr(
